@@ -31,6 +31,12 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
+### MacOS/Linus
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
 Quick examples
 --------------
 (Use PowerShell. Replace the python path if you're not using the workspace `.venv`.)
@@ -43,6 +49,7 @@ Run the demo (generates a test image if you don't give an input path):
 & 'C:/.../goup proj test/.venv/Scripts/python.exe' -m haar_rice.demo C:\path\to\image.jpg --levels 2 --qstep 8.0 --block-size 32
 ```
 
+
 Encode / decode with the CLI
 
 ```powershell
@@ -52,6 +59,16 @@ Encode / decode with the CLI
 # Decode (reads container and writes reconstructed image)
 & 'C:/.../goup proj test/.venv/Scripts/python.exe' -m haar_rice.cli decode output.hrc recon.png
 ```
+### Encode on MacOS/Linux
+```bash
+python -m haar_rice.cli encode cat.jpg cat.hrc --levels 1 --qstep 10.0 --block-size 32
+```
+
+### Decode on MacOS/Linux
+```bash
+python -m haar_rice.cli decode cat.hrc recon_cat.png
+```
+
 
 Library usage (Python API)
 --------------------------
@@ -109,3 +126,4 @@ If you want, I can implement any of the above. Tell me which you'd like next (fo
 License & disclaimer
 --------------------
 This code is educational and provided as-is. It's intended for experimentation and learning about wavelet-based compression and Rice coding, not for production use.
+
