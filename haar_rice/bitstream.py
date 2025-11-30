@@ -1,3 +1,23 @@
+"""Bit-level IO helpers: BitWriter and BitReader.
+
+This module provides a simple MSB-first bit writer and reader used by the
+Haar-Rice compressor. The API is intentionally small and focused on the
+package's internal bitstream format:
+
+- BitWriter: accumulate bits (MSB-first within values) and obtain the
+    packed bytes via `get_bytes()`, which returns a `(bytes, bit_length)`
+    tuple. `bit_length` is the total number of bits written; if the final
+    byte is partial it is left-aligned (high-order bits populated) and
+    padded with zeros in the low-order bits.
+
+- BitReader: read bits from a `bytes` buffer given a `bit_length` (the
+    total number of valid bits). Reading is MSB-first and `read_bit()` will
+    raise `StopIteration` if the reader advances past `bit_length`.
+
+The module is intentionally small and designed to be compatible with the
+Rice coder and other bit-level helpers in this educational project.
+"""
+
 class BitWriter:
     def __init__(self):
         self._bytes = bytearray()
@@ -16,8 +36,8 @@ class BitWriter:
 
     def write_bits(self, value: int, count: int):
         # write count bits of value, MSB-first
-        for i in range(count - 1, -1, -1):
-            bit = (value >> i) & 1
+        for bit_position in range(count - 1, -1, -1):
+            bit = (value >> bit_position) & 1
             self.write_bit(bit)
 
     def write_unary(self, q: int):
