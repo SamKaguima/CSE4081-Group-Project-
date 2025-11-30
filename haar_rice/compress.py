@@ -7,16 +7,28 @@ from .rice import RiceCoder
 
 
 def compress(img_array, levels=1, qstep=10.0, block_size=32):
-    """Compress a 2D numpy grayscale image. Returns bytes containing a self-contained container.
+    """
+    Compress a numpy image array (2D grayscale or 3D RGB) into a self-contained binary container.
+
+    Parameters:
+        img_array (np.ndarray): Input image. Can be a 2D array (H, W) for grayscale, or a 3D array (H, W, 3) for RGB.
+        levels (int, optional): Number of DWT decomposition levels. Default is 1.
+    - 1 byte levels
+    - 1 byte channels
+        block_size (int, optional): Block size for Rice coding. Default is 32.
+
+    Returns:
+        bytes: A self-contained binary container encoding the compressed image.
 
     Container format (binary):
-    - 4 bytes magic: b'HR01'
-    - 1 byte version
-    - 4 bytes h (uint32), 4 bytes w (uint32)
-    - 1 byte levels
-    - 4 bytes float qstep (packed as float)
-    - 4 bytes block_size (uint32)
-    - followed by payload: rice-encoded blocks (see RiceCoder)
+        - 4 bytes magic: b'HR01'
+        - 1 byte version
+        - 4 bytes h (uint32), 4 bytes w (uint32)
+        - 1 byte levels
+        - 1 byte channels
+        - 4 bytes float qstep (packed as float)
+        - 4 bytes block_size (uint32)
+        - followed by payload: rice-encoded blocks (see RiceCoder)
     """
     # accept grayscale (2D) or color (H,W,3)
     if img_array.ndim == 2:
@@ -69,13 +81,13 @@ def decompress(container_bytes):
     magic = container_bytes[0:4]
     if magic != b'HR01':
         raise ValueError('bad magic')
-    version = container_bytes[4]
+    # version = container_bytes[4]
     h = int.from_bytes(container_bytes[5:9], 'big')
     w = int.from_bytes(container_bytes[9:13], 'big')
     levels = container_bytes[13]
     channels = container_bytes[14]
     qstep = struct.unpack('>f', container_bytes[15:19])[0]
-    block_size = int.from_bytes(container_bytes[19:23], 'big')
+    # block_size = int.from_bytes(container_bytes[19:23], 'big')
 
     coder = RiceCoder()
     idx = 23

@@ -12,9 +12,9 @@ What you'll find in this workspace
   - `rice.py` — adaptive Rice coder (per-block m selection)
   - `compress.py` — top-level compress/decompress (containerized format)
   - `cli.py` — command-line interface (encode / decode)
-  - `demo.py` — simple demo that compresses/decompresses and reports PSNR
 - `tests/` — pytest tests (one round-trip smoke test)
-- `requirements.txt` — Python dependencies
+- `demo_metrics.py` — demo script to report file sizes (original + compressed + decompressed), PSNR on luma channel, and compression ratio.
+
 
 Dependencies
 ------------
@@ -41,34 +41,21 @@ Quick examples
 --------------
 (Use PowerShell. Replace the python path if you're not using the workspace `.venv`.)
 
-Run the demo (generates a test image if you don't give an input path):
-
-```powershell
-& 'C:/.../goup proj test/.venv/Scripts/python.exe' -m haar_rice.demo
-# or with an input image
-& 'C:/.../goup proj test/.venv/Scripts/python.exe' -m haar_rice.demo C:\path\to\image.jpg --levels 2 --qstep 8.0 --block-size 32
-```
-
-
 Encode / decode with the CLI
 
-```powershell
-# Encode (writes a single container file)
-& 'C:/.../goup proj test/.venv/Scripts/python.exe' -m haar_rice.cli encode input.jpg output.hrc --levels 1 --qstep 10.0 --block-size 32
-
-# Decode (reads container and writes reconstructed image)
-& 'C:/.../goup proj test/.venv/Scripts/python.exe' -m haar_rice.cli decode output.hrc recon.png
-```
-### Encode on MacOS/Linux
+### Encode 
 ```bash
 python -m haar_rice.cli encode cat.jpg cat.hrc --levels 1 --qstep 10.0 --block-size 32
 ```
 
-### Decode on MacOS/Linux
+### Decode 
 ```bash
 python -m haar_rice.cli decode cat.hrc recon_cat.png
 ```
-
+### Run the demo for metrics (compress + decompress + report PSNR on luma channel)
+```bash
+python demo_metrics.py original_image compresses_image reconstructed_image
+```
 
 Library usage (Python API)
 --------------------------
