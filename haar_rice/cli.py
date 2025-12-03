@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+from PIL import Image
 from .compress import load_image_grayscale, save_image_from_array, compress, decompress
 
 
@@ -18,7 +19,14 @@ def main():
     dec.add_argument('outfile')
     args = p.parse_args()
     if args.cmd == 'encode':
-        arr = load_image_grayscale(args.infile)
+        # Load input image: preserve grayscale if input is single-channel,
+        # otherwise convert to RGB and compress color.
+        im = Image.open(args.infile)
+        if im.mode == 'L':
+            arr = np.array(im)
+        else:
+            arr = np.array(im.convert('RGB'))
+
         container = compress(arr, levels=args.levels, qstep=args.qstep, block_size=args.block_size)
         with open(args.outfile, 'wb') as f:
             f.write(container)
