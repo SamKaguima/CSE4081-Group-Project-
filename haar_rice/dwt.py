@@ -1,15 +1,18 @@
 import numpy as np
 
-
+# Performs a signle-level 1D Haar Wavelet transform on a 1D array
 def _dwt1d(arr):
     n = arr.shape[0]
-    assert n % 2 == 0
+    assert n % 2 == 0 # length must be even for Haar transforms to work
     half = n // 2
+
+    # even and odd indexed pairs for averages and differences
     a = (arr[0::2] + arr[1::2]) / 2.0
     d = (arr[0::2] - arr[1::2]) / 2.0
     return np.concatenate([a, d])
 
 
+# inverse of the 1D Haar wavelet Transform
 def _idwt1d(coefs):
     n = coefs.shape[0]
     half = n // 2
@@ -24,24 +27,31 @@ def _idwt1d(coefs):
 
 
 def dwt2(img, levels=1):
-    """Perform multilevel 2D Haar DWT on a 2D numpy array.
-    Returns a new array with the same shape containing wavelet coefficients.
+    """
+    Perform a multi-level 2D Haar DWT on a 2D array.
+    At each level,transform:
+        - All rows of the current region
+        - Then all columns of the current region
+    Only the top-left quarter of the image is processed at each deeper level
     """
     arr = img.astype(np.float64).copy()
     h, w = arr.shape
+    
     for lev in range(levels):
+        # size of the subregion for this decompostion level
         sh = h >> lev
         sw = w >> lev
+        
         # operate on top-left sh x sw
-        # row-wise
+        # row-wise transforms
         for i in range(sh):
             arr[i, :sw] = _dwt1d(arr[i, :sw])
-        # column-wise
+        # column-wise transforms
         for j in range(sw):
             arr[:sh, j] = _dwt1d(arr[:sh, j])
     return arr
 
-
+# inverse multilevel 2D Haar DWT
 def idwt2(coefs, levels=1):
     arr = coefs.astype(np.float64).copy()
     h, w = arr.shape
