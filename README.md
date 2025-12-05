@@ -1,7 +1,7 @@
 Haar-Rice Image Compression (Python)
 ===================================
 
-A small educational implementation of a lossy image compressor using the 2D Haar wavelet transform, uniform quantization, and adaptive Rice entropy coding. The project implements a complete end-to-end encoder/decoder pipeline in pure Python (NumPy + Pillow) with a small CLI and a demo script.
+A small implementation of a lossy image compressor using the 2D Haar wavelet transform, uniform quantization, and adaptive Rice entropy coding. The project implements a complete end-to-end encoder/decoder pipeline in pure Python (NumPy + Pillow) with a small CLI and a demo script.
 
 What you'll find in this workspace
 ----------------------------------
@@ -31,15 +31,14 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-### MacOS/Linus
+### MacOS/Linux
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 ```
 
-Quick examples
---------------
-(Use PowerShell. Replace the python path if you're not using the workspace `.venv`.)
+Commands 
+--------
 
 Encode / decode with the CLI
 
@@ -64,7 +63,7 @@ python demo_metrics.py test_images/original_image.ext test_out/compressed_image.
 
 Compression parameters
 ----------------------
-This implementation exposes three main parameters that control compression behavior:
+This implementation has three main parameters that control compression behavior:
 
 - `--levels` (DWT decomposition levels): how many times the 2D Haar wavelet is applied. Higher levels increase the transform depth, producing larger low-frequency (LL) bands and finer high-frequency subbands. Increasing `levels` can improve compression of smooth images but requires image dimensions divisible by `2**levels`.
 
@@ -82,15 +81,7 @@ CLI flags
 - `--qstep F` — float (default `10.0`)
 - `--block-size N` — integer (default `32`)
 
-Examples
-- High-quality (less compression):
-```powershell
-python -m haar_rice.cli encode input.jpg output.hrc --levels 1 --qstep 4.0 --block-size 32
-```
-- More aggressive compression:
-```powershell
-python -m haar_rice.cli encode input.jpg output.hrc --levels 2 --qstep 12.0 --block-size 32
-```
+
 ### Run the verifier (lossy vs lossless round-trip test)
 ```bash
 python metrics/verify.py test_images/original_image test_out/reconstructed_image.ext
@@ -129,32 +120,4 @@ The compressed output is a self-contained binary container. Current layout (vers
   - 4 bytes: payload length in bytes (uint32)
   - payload bytes: Rice-coded blocks — each block itself internally stores each block's bit-length followed by bit-packed block bytes (see source for exact layout)
 
-Notes
------
-- RGB images are converted to YCbCr for compression and converted back on decode. PSNR reported by the demo is computed on the luma (Y) channel.
-- The implementation is educational and not optimized for production-level performance. The Rice coder and bitstreams are implemented in Python; for speed sensitive use-cases you could replace them with a C/Cython extension or optimize large-block vectorization.
-- Quantization is uniform across channels; you may achieve better perceptual results using smaller qstep for Y and larger qstep for chroma channels, or by applying chroma subsampling (e.g., 4:2:0) which is not currently implemented.
-
-Testing
--------
-Run the unit tests with pytest:
-
-```powershell
-& 'C:/.../goup proj test/.venv/Scripts/python.exe' -m pytest -q
-```
-
-Developer notes and next steps
-------------------------------
-- Possible improvements:
-  - Chroma subsampling (4:2:0) to reduce chroma payloads significantly.
-  - Per-channel quantization steps (different qstep for Y vs Cb/Cr).
-  - Replace Python string-based m-selection loops with NumPy vectorized heuristics or C acceleration.
-  - Add a simple `.hrc` extension and more robust container metadata (codec versioning, original dtype, checksum).
-  - Add PSNR/SSIM utilities for evaluation, and a small benchmarking script.
-
-If you want, I can implement any of the above. Tell me which you'd like next (for example: add 4:2:0 subsampling and the corresponding decode upsampling, or save the container and reconstructed image from the demo automatically). 
-
-License & disclaimer
---------------------
-This code is educational and provided as-is. It's intended for experimentation and learning about wavelet-based compression and Rice coding, not for production use.
 
