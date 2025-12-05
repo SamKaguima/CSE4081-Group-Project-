@@ -1,5 +1,10 @@
 from .bitstream import BitWriter, BitReader
 
+#This code compresses and decompresses lists of integers using a method called Rice coding, 
+#which is good when the numbers are usually small. It first converts signed integers (negative and positive) 
+#into non-negative ones, then encodes each value using a mix of unary and fixed-length binary bits based on a 
+#chosen parameter m. It also automatically tests different m values to find the one that gives the shortest 
+#encoded block, and can pack or unpack multiple blocks into a single byte stream.
 
 class RiceCoder:
     def __init__(self, m_choices=(0, 1, 2, 3, 4, 5, 6, 7, 8)):

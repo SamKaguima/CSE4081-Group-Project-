@@ -1,8 +1,7 @@
 """Haar-Rice compression package
 
 This package contains a small implementation of a 2D Haar DWT,
-uniform quantization, and an adaptive Rice coder for demonstration
-and educational purposes.
+uniform quantization, and an adaptive Rice coder
 """
 from .compress import compress, decompress
 from .dwt import dwt2, idwt2
