@@ -207,6 +207,7 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"Original raw bytes: {orig_bytes:,} bytes")
     print(f"Compressed payload bytes: {comp_bytes:,} bytes")
+    print(f"Space Saved : {orig_bytes - comp_bytes:,} bytes ({(orig_bytes - comp_bytes) / orig_bytes * 100:.2f}%)")
     print(f"Decompressed raw bytes: {decomp_bytes:,} bytes")
     if compression_ratio is None:
         print("Compression ratio: N/A")
