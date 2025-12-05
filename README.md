@@ -43,18 +43,62 @@ Quick examples
 
 Encode / decode with the CLI
 
+## ext = png, jpg, bmp, etc.
+## test_images folder contains sample images
+## test_out folder is for output files
+
+
 ### Encode 
 ```bash
-python -m haar_rice.cli encode cat.jpg cat.hrc --levels 1 --qstep 10.0 --block-size 32
+python -m haar_rice.cli encode test_images/original_image.ext test_out/compressed_image.hrc --levels 1 --qstep 10.0 --block-size 32
 ```
 
 ### Decode 
 ```bash
-python -m haar_rice.cli decode cat.hrc recon_cat.png
+python -m haar_rice.cli decode test_out/compressed_image.hrc test_out/recon_image.ext
 ```
 ### Run the demo for metrics (compress + decompress + report PSNR on luma channel)
 ```bash
-python demo_metrics.py original_image compresses_image reconstructed_image
+python demo_metrics.py test_images/original_image.ext test_out/compressed_image.hrc test_out/reconstructed_image.ext
+```
+
+Compression parameters
+----------------------
+This implementation exposes three main parameters that control compression behavior:
+
+- `--levels` (DWT decomposition levels): how many times the 2D Haar wavelet is applied. Higher levels increase the transform depth, producing larger low-frequency (LL) bands and finer high-frequency subbands. Increasing `levels` can improve compression of smooth images but requires image dimensions divisible by `2**levels`.
+
+- `--qstep` (quantization step, float): uniform quantization step size applied to wavelet coefficients. Larger `qstep` → more aggressive quantization → higher compression and lower bitrate, but increased distortion (lower PSNR). Smaller `qstep` (closer to 0) preserves more detail and yields higher PSNR at the cost of larger payloads. Typical default: `10.0`.
+
+- `--block-size` (integer): the number of quantized coefficients grouped into blocks for adaptive Rice coding. Larger block sizes can slightly improve entropy coding efficiency (fewer coding headers) but increase per-block adaptation cost and memory working set. Typical default: `32`.
+
+Guidance and trade-offs
+- For high-quality reconstructions (high PSNR): use fewer `levels` (1–2) and a small `qstep` (e.g., 1.0–5.0). File size will be larger.
+- For stronger compression: increase `qstep` (e.g., 8.0–20.0). You may also experiment with higher `levels` on images with large smooth regions.
+- `block-size` rarely needs tuning; keep the default unless you are profiling compression ratio vs block-encoding overhead.
+
+CLI flags
+- `--levels N` — integer (default `1`)
+- `--qstep F` — float (default `10.0`)
+- `--block-size N` — integer (default `32`)
+
+Examples
+- High-quality (less compression):
+```powershell
+python -m haar_rice.cli encode input.jpg output.hrc --levels 1 --qstep 4.0 --block-size 32
+```
+- More aggressive compression:
+```powershell
+python -m haar_rice.cli encode input.jpg output.hrc --levels 2 --qstep 12.0 --block-size 32
+```
+### Run the verifier (lossy vs lossless round-trip test)
+```bash
+python metrics/verify.py test_images/original_image test_out/reconstructed_image.ext
+```
+
+### Run the compressesed image viewer 
+```bash
+python view_compressed.py test_out/compressed_image.hrc
 ```
 
 Library usage (Python API)
