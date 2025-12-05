@@ -2,12 +2,6 @@ import numpy as np
 
 
 def quantize(coefs, step, preserve_ll=True, levels=1):
-    """Uniform scalar quantization. Returns integer quantized coefficients.
-    coefs: 2D float array from dwt2
-    step: quantization step(positive float)
-    preserve_ll: if True,do not quantize the final LL band
-    levels: number of decomposition levels used
-    """
     q = np.rint(coefs / step).astype(np.int32)
     if preserve_ll:
         # zero-out quantization for LL at final level by restoring original (rounded) values
