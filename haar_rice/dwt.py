@@ -1,6 +1,6 @@
 import numpy as np
 
-# Performs a signle-level 1D Haar Wavelet transform on a 1D array
+# Performs a single-level 1D Haar Wavelet transform on a 1D array
 def _dwt1d(arr):
     n = arr.shape[0]
     assert n % 2 == 0 # length must be even for Haar transforms to work
@@ -27,13 +27,6 @@ def _idwt1d(coefs):
 
 
 def dwt2(img, levels=1):
-    """
-    Perform a multi-level 2D Haar DWT on a 2D array.
-    At each level,transform:
-        - All rows of the current region
-        - Then all columns of the current region
-    Only the top-left quarter of the image is processed at each deeper level
-    """
     arr = img.astype(np.float64).copy()
     h, w = arr.shape
     
