@@ -1,5 +1,11 @@
 import numpy as np
 
+#This code quantizes and dequantizes a 2D array of coefficients (for example, from a wavelet transform) 
+#using a given step size. In quantize, it divides all coefficients by step, rounds them to integers, and, 
+#if preserve_ll is True, it does not scale the low-frequency LL subband (top-left block), whose size is 
+#set by the number of decomposition levels. In dequantize, it multiplies the quantized values back by step 
+#to approximate the original coefficients, but directly copies the LL subband from the integers (without scaling) 
+#so that region keeps its higher accuracy.
 
 def quantize(coefs, step, preserve_ll=True, levels=1):
     q = np.rint(coefs / step).astype(np.int32)
