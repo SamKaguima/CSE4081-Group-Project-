@@ -39,13 +39,8 @@ source .venv/bin/activate
 
 Commands 
 --------
-
 Encode / decode with the CLI
-
-## ext = png, jpg, bmp, etc.
-## test_images folder contains sample images
-## test_out folder is for output files
-
+ext = png, jpg, bmp, etc.
 
 ### Encode 
 ```bash
@@ -119,5 +114,6 @@ The compressed output is a self-contained binary container. Current layout (vers
 - then, for each channel in order (Y, Cb, Cr or single channel):
   - 4 bytes: payload length in bytes (uint32)
   - payload bytes: Rice-coded blocks — each block itself internally stores each block's bit-length followed by bit-packed block bytes (see source for exact layout)
+
 
 
